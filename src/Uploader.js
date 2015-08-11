@@ -55,7 +55,7 @@ export default class Uploader {
 
 	constructor(elem, opts) {
 		elem = _convertElement(elem);
-		opts = _extend(DEFAULT_OPTS, opts);
+		opts = _extend(DEFAULT_OPTS, opts || {});
 
 		if (opts.progressBar) {
 			opts.progressBar = _convertElement(opts.progressBar);
@@ -117,6 +117,7 @@ export default class Uploader {
 
 				req.open('POST', opts.uploadURL);
 				req.setRequestHeader('Cache-Control', 'no-cache');
+
 				if (opts.beforeUpload(req) !== false) {
 					req.send(data);
 				}

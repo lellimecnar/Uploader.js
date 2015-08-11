@@ -3,14 +3,14 @@
 ## `new Uploader(element, options);`
 
 | argument | type | description |
-|--|--|--|
+| --- | --- | --- |
 | `element` | `String`, `HTMLElement` | The element, elements, or selector which will trigger the file upload |
-| `options` | `` | See "Options" below |
+| `options` | `Object` | See "Options" below |
 
 ## Options
 
 | option | default | description |
-|--|--|--|
+| --- | --- | --- |
 | `allowMultiple` | `true` | Allow upload of multiple files at once |
 | `accept` | `null` | Restrict upload to certain content types. for example: `images/*` |
 | `uploadURL` | `'/'` | The URL to `POST` the upload to |
@@ -22,7 +22,7 @@
 All events are passed in as options.
 
 | option | arguments | description |
-|--|--|--|
+| --- | --- | --- |
 | `beforeFileSelect` | `Event` | Before showing the file dialog. Return `false` to prevent the dialog from showing |
 | `onFileSelect` | `Event`, `FileList`, `FormData` | After the files are selected and the `FormData` is created. Return `false` to prevent the `xhr` object from being configured |
 | `beforeUpload` | `XMLHttpRequest` | After the `xhr` object is created, but before it's submitted. Return `false` to prevent the actual upload |
