@@ -9,7 +9,7 @@ let fileElement = new Private(),
 		fieldName: 'file[]',
 		progressBar: null,
 		beforeFileSelect: (e) => {
-			console.log('beforeFileSelect');
+			console.log('beforeFileSelect', e);
 		},
 		onFileSelect: (e, files) => {
 			console.log('onFileSelect', e, files);
@@ -85,40 +85,41 @@ export default class Uploader {
 		});
 
 		input.addEventListener('change', function(e) {
-			opts.onFileSelect(e, this.files);
-
-			var data = new FormData(),
-				req = new XMLHttpRequest();
+			var data = new FormData();
 
 			for (let i in this.files) {
 				data.append(opts.fieldName, this.files[i]);
 			}
 
-			req.upload.addEventListener('progress', (e) => {
-				var percent = null;
-				if (e.lengthComputable) {
-					percent = Math.round(((e.loaded * 100) / e.total) * 100) / 100;
-					if (opts.progressBar) {
-						[].forEach.call(opts.progressBar, (bar) => {
-							bar.style.width = Math.round(percent)+'%';
-						});
+			if (opts.onFileSelect(e, this.files, data) !== false) {
+				var req = new XMLHttpRequest();
+
+				req.upload.addEventListener('progress', (e) => {
+					var percent = null;
+					if (e.lengthComputable) {
+						percent = Math.round(((e.loaded * 100) / e.total) * 100) / 100;
+						if (opts.progressBar) {
+							[].forEach.call(opts.progressBar, (bar) => {
+								bar.style.width = Math.round(percent)+'%';
+							});
+						}
 					}
+					opts.onProgress(e, percent);
+				});
+
+				req.upload.addEventListener('load', (e) => {
+					opts.afterUpload(e);
+				});
+
+				req.upload.addEventListener('error', (e) => {
+					opts.onError(e);
+				});
+
+				req.open('POST', opts.uploadURL);
+				req.setRequestHeader('Cache-Control', 'no-cache');
+				if (opts.beforeUpload(req) !== false) {
+					req.send(data);
 				}
-				opts.onProgress(e, percent);
-			});
-
-			req.upload.addEventListener('load', (e) => {
-				opts.afterUpload(e);
-			});
-
-			req.upload.addEventListener('error', (e) => {
-				opts.onError(e);
-			});
-
-			req.open('POST', opts.uploadURL);
-			req.setRequestHeader('Cache-Control', 'no-cache');
-			if (opts.beforeUpload(req) !== false) {
-				req.send(data);
 			}
 		});
 	}
