@@ -1,5 +1,7 @@
 import Private from './Private';
 
+delete window.Private;
+
 let fileElement = new Private(),
 	element = new Private(),
 	DEFAULT_OPTS = {
@@ -8,24 +10,12 @@ let fileElement = new Private(),
 		uploadURL: '/',
 		fieldName: 'file[]',
 		progressBar: null,
-		beforeFileSelect: (e) => {
-			console.log('beforeFileSelect', e);
-		},
-		onFileSelect: (e, files) => {
-			console.log('onFileSelect', e, files);
-		},
-		beforeUpload: (xhr) => {
-			console.log('beforeUpload', xhr);
-		},
-		onProgress: (e, percent) => {
-			console.log('onProgress', e, percent);
-		},
-		afterUpload: (e) => {
-			console.log('afterUpload', e);
-		},
-		onError: (e) => {
-
-		}
+		beforeFileSelect: (e) => {},
+		onFileSelect: (e, files) => {},
+		beforeUpload: (xhr) => {},
+		onProgress: (e, percent) => {},
+		onSuccess: (e) => {},
+		onError: (e) => {}
 	};
 
 function _extend(obj1, obj2) {
@@ -40,8 +30,14 @@ function _convertElement(elem) {
 		elem = [elem];
 	} else if (typeof elem === 'string' && elem !== '') {
 		elem = document.querySelectorAll(elem);
-	} else {
-		elem = [document.createElement('a')];
+	} else if(Array.isArray(elem)) {
+		var tmpElem = [];
+		elem.forEach((el) => {
+			tmpElem.concat(_convertElement(el));
+		});
+		elem = tmpElem;
+	} else if (!elem) {
+		elem = [document.createElement('button')];
 	}
 
 	return elem;
@@ -53,8 +49,14 @@ export default class Uploader {
 		return DEFAULT_OPTS;
 	}
 
+	get element() {
+		return element.get(this);
+	}
+
 	constructor(elem, opts) {
 		elem = _convertElement(elem);
+		element.set(this, elem);
+
 		opts = _extend(DEFAULT_OPTS, opts || {});
 
 		if (opts.progressBar) {
@@ -62,6 +64,8 @@ export default class Uploader {
 		}
 
 		var input = document.createElement('input');
+		fileElement.set(this, input);
+
 		input.setAttribute('type', 'file');
 
 		if (opts.allowMultiple) {
@@ -72,7 +76,6 @@ export default class Uploader {
 			input.setAttribute('accept', opts.accept);
 		}
 
-		fileElement.set(this, input);
 
 
 		[].forEach.call(elem, (el) => {
@@ -108,7 +111,7 @@ export default class Uploader {
 				});
 
 				req.upload.addEventListener('load', (e) => {
-					opts.afterUpload(e);
+					opts.onSuccess(e);
 				});
 
 				req.upload.addEventListener('error', (e) => {

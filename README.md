@@ -4,7 +4,7 @@
 
 | argument | type | description |
 | --- | --- | --- |
-| `element` | `String`, `HTMLElement` | The element, elements, or selector which will trigger the file upload |
+| `element` | `String`, `HTMLElement`, `NodeList`, `Array` | The element, elements, or selector which will trigger the file upload |
 | `options` | `Object` | See "Options" below |
 
 ## Options
@@ -27,5 +27,5 @@ All events are passed in as options.
 | `onFileSelect` | `Event`, `FileList`, `FormData` | After the files are selected and the `FormData` is created. Return `false` to prevent the `xhr` object from being configured |
 | `beforeUpload` | `XMLHttpRequest` | After the `xhr` object is created, but before it's submitted. Return `false` to prevent the actual upload |
 | `onProgress` | `XMLHttpRequestProgressEvent`, `percentage` | Fires every time the server updates the upload progress |
-| `afterUpload` | `XMLHttpRequestProgressEvent` | The progress has reached 100% and the file(s) have successfully been sent to the server |
+| `onSuccess` | `XMLHttpRequestProgressEvent` | The progress has reached 100% and the file(s) have successfully been sent to the server |
 | `onError` | `Error` | An error with the request has occurred |
