@@ -66,6 +66,14 @@ export default class Uploader {
 		var input = document.createElement('input');
 		fileElement.set(this, input);
 
+		input.style.visibility = 'hidden';
+		input.style.position = 'fixed';
+		input.style.left = '-99999%';
+		input.style.top = input.style.left;
+		input.style.width = '1px';
+		input.style.height = input.style.width;
+		document.body.appendChild(input);
+
 		input.setAttribute('type', 'file');
 
 		if (opts.allowMultiple) {
