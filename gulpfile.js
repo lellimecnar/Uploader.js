@@ -14,6 +14,10 @@ gulp.task('build', function() {
 		}))
 		.pipe($.concat('Uploader.min.js'))
 		.pipe($.uglify())
+		.pipe($.license('MIT', {
+			organization: 'Lance Miller',
+			tiny: true
+		}))
 		.pipe($.sourcemaps.write('.'))
 		.pipe(gulp.dest('.'));
 });
@@ -21,4 +25,4 @@ gulp.task('build', function() {
 gulp.task('watch', ['build'], function(done) {
 	gulp.watch('./src/**/*.js', ['build']);
 	return done();
-})
+});
