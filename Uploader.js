@@ -98,6 +98,7 @@
 	    element = new _Private2['default'](),
 	    DEFAULT_OPTS = {
 		allowMultiple: true,
+		singleRequest: true,
 		accept: null,
 		uploadURL: '/',
 		fieldName: 'file[]',
@@ -106,7 +107,8 @@
 		onFileSelect: function onFileSelect(e, files) {},
 		beforeUpload: function beforeUpload(xhr) {},
 		onProgress: function onProgress(e, percent) {},
-		onSuccess: function onSuccess(e) {},
+		afterUpload: function afterUpload(e) {},
+		onSuccess: function onSuccess(res, xhr, e) {},
 		onError: function onError(e) {}
 	};
 
@@ -191,42 +193,55 @@
 			});
 
 			input.addEventListener('change', function (e) {
-				var data = new FormData();
+				var _this = this;
 
-				for (var i in this.files) {
-					data.append(opts.fieldName, this.files[i]);
-				}
+				if (opts.onFileSelect(this.files, e) !== false) {
+					[].forEach.call(opts.singleRequest ? [null] : this.files, function (file) {
+						var data = new FormData(),
+						    req = new XMLHttpRequest();
 
-				if (opts.onFileSelect(e, this.files, data) !== false) {
-					var req = new XMLHttpRequest();
-
-					req.upload.addEventListener('progress', function (e) {
-						var percent = null;
-						if (e.lengthComputable) {
-							percent = Math.round(e.loaded * 100 / e.total * 100) / 100;
-							if (opts.progressBar) {
-								[].forEach.call(opts.progressBar, function (bar) {
-									bar.style.width = Math.round(percent) + '%';
-								});
+						if (file === null) {
+							for (var i in _this.files) {
+								data.append(opts.fieldName, _this.files[i]);
 							}
+						} else {
+							data.append(opts.fieldName, file);
 						}
-						opts.onProgress(e, percent);
+
+						req.upload.addEventListener('progress', function (e) {
+							var percent = null;
+							if (e.lengthComputable) {
+								percent = Math.round(e.loaded * 100 / e.total * 100) / 100;
+								if (opts.progressBar) {
+									[].forEach.call(opts.progressBar, function (bar) {
+										bar.style.width = Math.round(percent) + '%';
+									});
+								}
+							}
+							e.currentFile = file;
+							opts.onProgress(percent, e);
+						});
+
+						req.upload.addEventListener('load', function (e) {
+							opts.afterUpload(req);
+						});
+
+						req.addEventListener('loadend', function (e) {
+							e.currentFile = file;
+							opts.onSuccess(e.target.response, e.target, e);
+						});
+
+						req.upload.addEventListener('error', function (e) {
+							opts.onError(e);
+						});
+
+						req.open('POST', opts.uploadURL);
+						req.setRequestHeader('Cache-Control', 'no-cache');
+
+						if (opts.beforeUpload(req, data) !== false) {
+							req.send(data);
+						}
 					});
-
-					req.upload.addEventListener('load', function (e) {
-						opts.onSuccess(e);
-					});
-
-					req.upload.addEventListener('error', function (e) {
-						opts.onError(e);
-					});
-
-					req.open('POST', opts.uploadURL);
-					req.setRequestHeader('Cache-Control', 'no-cache');
-
-					if (opts.beforeUpload(req) !== false) {
-						req.send(data);
-					}
 				}
 			});
 		}

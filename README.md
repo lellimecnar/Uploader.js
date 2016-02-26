@@ -24,8 +24,9 @@ All events are passed in as options.
 | option | arguments | description |
 | --- | --- | --- |
 | `beforeFileSelect` | `Event` | Before showing the file dialog. Return `false` to prevent the dialog from showing |
-| `onFileSelect` | `Event`, `FileList`, `FormData` | After the files are selected and the `FormData` is created. Return `false` to prevent the `xhr` object from being configured |
+| `onFileSelect` | `FileList`, `FormData`, `Event` | After the files are selected and the `FormData` is created. Return `false` to prevent the `xhr` object from being configured |
 | `beforeUpload` | `XMLHttpRequest` | After the `xhr` object is created, but before it's submitted. Return `false` to prevent the actual upload |
-| `onProgress` | `XMLHttpRequestProgressEvent`, `percentage` | Fires every time the server updates the upload progress |
-| `onSuccess` | `XMLHttpRequestProgressEvent` | The progress has reached 100% and the file(s) have successfully been sent to the server |
+| `onProgress` | `percent`, `XMLHttpRequestProgressEvent` | Fires every time the server updates the upload progress |
+| `afterUpload` | `XMLHttpRequestProgressEvent` | The progress has reached 100% and the file(s) have successfully been sent to the server |
+| `onSuccess` | `result`, `XMLHttpRequest`, `XMLHttpRequestProgressEvent` | The request is complete, and we have the result from the server |
 | `onError` | `Error` | An error with the request has occurred |

@@ -6,7 +6,6 @@ gulp.task('build', function(done) {
 		'./src/Private.js',
 		'./src/Uploader.js'
 	])
-		.pipe($.sourcemaps.init())
 		.pipe($.babel({
 			stage: 0,
 			moduleIds: true,
